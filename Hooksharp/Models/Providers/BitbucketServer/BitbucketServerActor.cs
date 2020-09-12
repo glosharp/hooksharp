@@ -23,6 +23,9 @@ namespace Hooksharp.Models.Providers.BitbucketServer
         public string Slug; 
 
         [JsonProperty("type")]
-        public string Type; 
+        public string Type;
+
+        [JsonProperty("links")]
+        public BitbucketServerLinks Links;
     }
 }

@@ -58,5 +58,8 @@ namespace Hooksharp.Models.Providers.BitbucketServer
 
         [JsonProperty("previousComment")]
         public string PreviousComment;
+        
+        [JsonProperty("description")]
+        public string Description;
     }
 }

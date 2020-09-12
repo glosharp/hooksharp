@@ -34,7 +34,7 @@ namespace Hooksharp.Handlers.Discord
             embed.Footer = new EmbedFooter
             {
                 Text = "Powered by Hooksharp, inspired by Skyhook",
-                IconUrl = "https://i.redd.it/v77esvpwz3931.jpg"
+                IconUrl = "https://glosharp.com/content/images/size/w1000/2020/09/glosharp_white-3.png"
             };
             
             // Set the standard Embed color.
