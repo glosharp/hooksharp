@@ -1,0 +1,87 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-9">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title><h1>Hooksharp</h1></mat-card-title>
+          <mat-card-subtitle>Webhook Parser for Microsoft Teams and Discord</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content *ngIf="!parsed">
+          <hr class="mt-2 text-white" />
+          <p>
+            Hooksharp is a Webhook parser that takes incoming webhooks from various Handlers, converts them, and pushes them
+            to one of the Providers you select. To get started, click Get Started below!
+          </p>
+          <mat-vertical-stepper #stepper>
+            <mat-step>
+              <ng-template matStepLabel>Select a Provider</ng-template>
+              <mat-grid-list cols="4" rowHeight="100px">
+                <mat-grid-tile class="mat-elevation-z1" *ngFor="let tile of providerTiles"
+                               (click)="onProviderClick(tile)"
+                               [colspan]="tile.cols"
+                               [rowspan]="tile.rows" style="cursor: pointer;">
+                  <img src="{{tile.logoUrl}}" width="50%">
+                </mat-grid-tile>
+              </mat-grid-list>
+
+              <div class="mt-3">
+                <button mat-button color="accent" (click)="stepper.next()">Next</button>
+              </div>
+            </mat-step>
+            <mat-step>
+              <ng-template matStepLabel>Select a Handler</ng-template>
+              <mat-grid-list cols="4" rowHeight="100px">
+                <mat-grid-tile class="mat-elevation-z1" *ngFor="let tile of handlerTiles"
+                               (click)="onHandlerClick(tile)"
+                               [colspan]="tile.cols"
+                               [rowspan]="tile.rows" style="cursor: pointer;">
+                  <img src="{{tile.logoUrl}}" width="50%">
+                </mat-grid-tile>
+              </mat-grid-list>
+
+              <div class="mt-3">
+                <button mat-button color="accent" (click)="stepper.previous()">Previous</button>
+                <button mat-button color="accent" (click)="stepper.next()">Next</button>
+              </div>
+            </mat-step>
+            <mat-step>
+              <ng-template matStepLabel>Enter your current Webhook</ng-template>
+              <div class="row">
+                <div class="col-md-12">
+                  <mat-form-field appearance="outline" color="accent" style="width: 100%;">
+                    <mat-label>Webhook To Parse</mat-label>
+                    <input matInput autocomplete="off"/>
+                  </mat-form-field>
+                  <div class="mt-3">
+                    <button mat-button color="accent" (click)="stepper.previous()">Previous</button>
+                    <button mat-button color="accent" (click)="onParseClick()">Parse!</button>
+                  </div>
+                </div>
+              </div>
+            </mat-step>
+          </mat-vertical-stepper>
+        </mat-card-content>
+
+        <mat-card-content *ngIf="parsed">
+          <h3>Your Parsed Webhook</h3>
+          <p>
+            <code>{{parsedWebhook}}</code>
+          </p>
+
+          <button mat-raised-button color="accent" (click)="onStartOverClick()">Create another or Start Over</button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="col-md-3">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Hooksharp Overview</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Selected Provider: {{selectedProviderTile.title}}</p>
+          <p>Selected Handler: {{selectedHandlerTile.title}}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
