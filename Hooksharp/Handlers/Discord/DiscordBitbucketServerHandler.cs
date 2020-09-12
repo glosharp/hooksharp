@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Hooksharp.Models.Discord;
+using Hooksharp.Models.Providers.BitbucketServer;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Hooksharp.Handlers.Discord
@@ -10,8 +11,7 @@ namespace Hooksharp.Handlers.Discord
     public class DiscordBitbucketServerHandler : DiscordBaseHandler
     {
         private readonly Embed _embed;
-        private JObject _body;
-        
+
         public DiscordBitbucketServerHandler()
         {
             SetEmbedColor(0x205081);
@@ -31,249 +31,260 @@ namespace Hooksharp.Handlers.Discord
 
         private Task ParseData(JObject raw, string eventKey)
         {
-            _body = raw;
             switch (eventKey)
             {
                 case "diagnostics:ping":
-                    DiscordPayload.Content = "Diagnostic Ping";
                     DiagnosticsPing();
                     break;
                 
                 case "repo:refs_changed":
-                    RepoRefsChanged();
+                    var repoChangedObject =
+                        JsonConvert.DeserializeObject<BitbucketServerPayloadRefsChanged>(raw.ToString());
+                    RepoRefsChanged(repoChangedObject);
                     break;
-                
-                case "repo:modified":
-                    RepoModified();
-                    break;
-                
+
                 case "repo:forked":
                     RepoForked();
                     break;
                 
                 case "repo:comment:added":
-                    RepoCommentAdded();
+                    var repoCommentAdded = JsonConvert.DeserializeObject<BitbucketServerPayloadComment>(raw.ToString());
+                    RepoCommentAdded(repoCommentAdded);
                     break;
                     
                 case "repo:comment:edited":
-                    RepoCommentEdited();
+                    var repoCommentEdit = JsonConvert.DeserializeObject<BitbucketServerPayloadComment>(raw.ToString());
+                    RepoCommentEdited(repoCommentEdit);
                     break;
                 
                 case "repo:comment:deleted":
-                    RepoCommentDeleted();
+                    var repoCommentDelete = JsonConvert.DeserializeObject<BitbucketServerPayloadComment>(raw.ToString());
+                    RepoCommentDeleted(repoCommentDelete);
                     break;
                 
                 case "mirror:repo_synchronized":
-                    MirrorRepoSynchronized();
+                    var repoSync = JsonConvert.DeserializeObject<BitbucketServerPayloadMirrorSync>(raw.ToString());
+                    MirrorRepoSynchronized(repoSync);
                     break;
                 
                 case "pr:opened":
-                    PrOpened();
+                    var prOpen = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrOpened(prOpen);
                     break;
                 
                 case "pr:from_ref_updated":
-                    PrFromRefUpdated();
+                    var prRefUpdate = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrFromRefUpdated(prRefUpdate);
                     break;
                 
                 case "pr:modified":
-                    PrModified();
+                    var prModified = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrModified(prModified);
                     break;
                 
                 case "pr:reviewer:updated":
-                    PrReviewerUpdated();
+                    var prReviewerModified = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrReviewerUpdated(prReviewerModified);
                     break;
                 
                 case "pr:reviewer:approved":
-                    PrReviewerApproved();
+                    var prReviewerApproved = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrReviewerApproved(prReviewerApproved);
                     break;
                     
                 case "pr:reviewer:unapproved":
-                    DiscordPayload.Content = "Diagnostic Ping";
-                    PrReviewerUnapproved();
+                    var prReviewerUnapproved = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrReviewerUnapproved(prReviewerUnapproved);
                     break;
                 
                 case "pr:reviewer:needs_work":
-                    DiscordPayload.Content = "Diagnostic Ping";
-                    PrReviewerNeedsWork();
+                    var prNeedsWork = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrReviewerNeedsWork(prNeedsWork);
                     break;
                 
                 case "pr:merged":
-                    DiscordPayload.Content = "Diagnostic Ping";
-                    PrMerged();
+                    var prMerged = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrMerged(prMerged);
                     break;
                 
                 case "pr:declined":
-                    DiscordPayload.Content = "Diagnostic Ping";
-                    PrDeclined();
+                    var prDeclined = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrDeclined(prDeclined);
                     break;
                 
                 case "pr:deleted":
-                    DiscordPayload.Content = "Diagnostic Ping";
-                    PrDeleted();
+                    var prDeleted = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrDeleted(prDeleted);
                     break;
                 
                 case "pr:comment:added":
-                    DiscordPayload.Content = "Diagnostic Ping";
-                    PrCommentAdded();
+                    var prCommentAdd = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrCommentAdded(prCommentAdd);
                     break;
                 
                 case "pr:comment:edited":
-                    DiscordPayload.Content = "Diagnostic Ping";
-                    PrCommentEdited();
+                    var prCommentEdit = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrCommentEdited(prCommentEdit);
                     break;
                 
                 case "pr:comment:deleted":
-                    DiscordPayload.Content = "Diagnostic Ping";
-                    PrCommentDeleted();
+                    var prCommentDelete = JsonConvert.DeserializeObject<BitbucketServerPayloadPullRequest>(raw.ToString());
+                    PrCommentDeleted(prCommentDelete);
                     break;
             }
             
             return Task.CompletedTask;
         }
         
+        /// <summary>
+        /// Handles the Diagnostic Pings for Connection Testing.
+        /// </summary>
         private void DiagnosticsPing()
         {
-            _embed.Title = "Test Connection from Sharphook";
-            _embed.Description = "You have successfully configured #hook with your Bitbucket Server Instance.";
+            _embed.Title = "Hooksharp, a Discord Parsing Engine";
+            _embed.Description = "You have successfully configured Hooksharp with your Bitbucket Server Instance! " +
+                                 "Happy Coding!";
             
             AddEmbed(_embed);
         }
 
-        private void RepoRefsChanged()
+        /// <summary>
+        /// Handle New Commit Pushes
+        /// </summary>
+        /// <param name="payload"></param>
+        private void RepoRefsChanged(BitbucketServerPayloadRefsChanged payload)
         {
-            _embed.Author = ExtractAuthor();
+            _embed.Author = ExtractAuthor(payload.Actor, payload.Repository);
             _embed.Title = "New Commit has been pushed";
-            _embed.Url = ExtractCommitCommentUrl();
-            _embed.Description = $"**Branch**: {(string)_body["changes"]?[0]?["ref"]?["id"]}";
-            _embed.Fields = ExtractRepoChangesField();
-            AddEmbed(_embed);
-            
-        }
-
-        private void RepoModified()
-        {
-            _embed.Author = ExtractAuthor();
-            _embed.Title = "Repository has been modified";
-
+            _embed.Url = ExtractCommitCommentUrl(payload);
+            _embed.Description = $"**Branch**: {payload.Changes[0].Ref.Id}";
+            _embed.Fields = ExtractRepoChangesField(payload.Changes);
             AddEmbed(_embed);
             
         }
 
         private void RepoForked()
         {
-            _embed.Author = ExtractAuthor();
+            _embed.Author = new EmbedAuthor
+            {
+                Name = "Hooksharp"
+            };
             _embed.Title = "A new [`fork`] has been created.";
             
             AddEmbed(_embed);
         }
 
-        private void RepoCommentAdded()
+        private void RepoCommentAdded(BitbucketServerPayloadComment comment)
         {
-            FormatCommitCommentPayload("New comment on commit");
+            FormatCommitCommentPayload("New comment on commit", comment);
             AddEmbed(_embed);
         }
 
-        private void RepoCommentEdited()
+        private void RepoCommentEdited(BitbucketServerPayloadComment comment)
         {
-            FormatCommitCommentPayload("Comment edited on commit");
+            FormatCommitCommentPayload("Comment edited on commit", comment);
             AddEmbed(_embed);
         }
 
-        private void RepoCommentDeleted()
+        private void RepoCommentDeleted(BitbucketServerPayloadComment comment)
         {
-            FormatCommitCommentPayload("Comment deleted on commit");
+            FormatCommitCommentPayload("Comment deleted on commit", comment);
             AddEmbed(_embed);
         }
 
-        private void PrOpened()
+        private void PrOpened(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("Pull Request opened");
+            FormatPrPayload("Pull Request opened", payload);
             AddEmbed(_embed);
         }
 
-        private void PrFromRefUpdated()
+        private void PrFromRefUpdated(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("Pull Request updated");
+            FormatPrPayload("Pull Request updated", payload);
             AddEmbed(_embed);
         }
 
-        private void PrModified()
+        private void PrModified(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("Pull Request modified");
+            FormatPrPayload("Pull Request modified", payload);
             AddEmbed(_embed);
         }
 
-        private void PrReviewerUpdated()
+        private void PrReviewerUpdated(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("New reviewer for Pull Request");
+            FormatPrPayload("New reviewer for Pull Request", payload);
             AddEmbed(_embed);
         }
 
-        private void PrReviewerApproved()
+        private void PrReviewerApproved(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("Pull Request approved!");
+            FormatPrPayload("Pull Request approved!", payload);
             AddEmbed(_embed);
         }
 
-        private void PrReviewerUnapproved()
+        private void PrReviewerUnapproved(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("Removed approval for Pull Request");
+            FormatPrPayload("Removed approval for Pull Request", payload);
             AddEmbed(_embed);
         }
 
-        private void PrReviewerNeedsWork()
+        private void PrReviewerNeedsWork(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("Pull Request needs work");
+            FormatPrPayload("Pull Request needs work", payload);
             AddEmbed(_embed);
         }
 
-        private void PrMerged()
+        private void PrMerged(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("Pull Request merged!");
+            FormatPrPayload("Pull Request merged!", payload);
             AddEmbed(_embed);
         }
 
-        private void PrDeleted()
+        private void PrDeleted(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("Pull Request deleted");
+            FormatPrPayload("Pull Request deleted", payload);
             AddEmbed(_embed);
         }
 
-        private void PrDeclined()
+        private void PrDeclined(BitbucketServerPayloadPullRequest payload)
         {
-            FormatPrPayload("Pull Request declined");
+            FormatPrPayload("Pull Request declined", payload);
             AddEmbed(_embed);
         }
 
-        private void PrCommentAdded()
+        private void PrCommentAdded(BitbucketServerPayloadPullRequest payload)
         {
-            FormatCommentPayload("New comment on Pull Request");
+            FormatCommentPayload("New comment on Pull Request", payload);
             AddEmbed(_embed);
         }
 
-        private void PrCommentEdited()
+        private void PrCommentEdited(BitbucketServerPayloadPullRequest payload)
         {
-            FormatCommentPayload("Updated comment on Pull Request");
+            FormatCommentPayload("Updated comment on Pull Request", payload);
             AddEmbed(_embed);
         }
 
-        private void PrCommentDeleted()
+        private void PrCommentDeleted(BitbucketServerPayloadPullRequest payload)
         {
-            FormatCommentPayload("Deleted comment on Pull Request");
+            FormatCommentPayload("Deleted comment on Pull Request", payload);
             AddEmbed(_embed);
         }
 
-        private void MirrorRepoSynchronized()
+        private void MirrorRepoSynchronized(BitbucketServerPayloadMirrorSync payload)
         {
-            _embed.Author = ExtractAuthor();
             _embed.Title = "Mirror Synchronized";
-            
+            _embed.Description = $"Bitbucket Mirrors synced: {payload.MirrorServer.Name}";
             AddEmbed(_embed);
         }
         
-        private EmbedAuthor ExtractAuthor()
+        private static EmbedAuthor ExtractAuthor(BitbucketServerActor actor, BitbucketServerRepository repository)
         {
-            var authorName = ExtractRepositoryName() ?? (string) _body["actor"]?["displayName"];
+            // To keep actual names private, we have opted to go with a different approach. By default, we will 
+            // return the Repository Name as the Author name. If you want this changed, set the 
+            // ALLOW_REAL_NAMES environment variable to true.
+            var authorName = Environment.GetEnvironmentVariable("ALLOW_REAL_NAMES") == "true" 
+                ? actor.DisplayName 
+                : repository.Name;
 
             return new EmbedAuthor
             {
@@ -281,153 +292,140 @@ namespace Hooksharp.Handlers.Discord
                 IconUrl = "https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/44_Bitbucket_logo_logos-512.png"
             };
         }
-
-        private string ExtractRepositoryName()
-        {
-            return (string) _body["repository"]?["name"];
-        }
         
-        private void FormatCommitCommentPayload(string title)
+        
+        private void FormatCommitCommentPayload(string title, BitbucketServerPayloadComment comment)
         {
-            var commit = (string) _body["commit"];
-            var formattedCommit = commit?.Substring(0, 10);
-            
-            _embed.Author = ExtractAuthor();
-            _embed.Title = $"{title}: {formattedCommit}";
-            _embed.Description = (string) _body["comment"]?["text"];
+            _embed.Author = ExtractAuthor(comment.Actor, comment.Repository);
+            _embed.Title = $"{title}: {comment.Commit.Substring(0,10)}";
+            _embed.Description = comment.Comment.Text;
         }
 
-        private void FormatPrPayload(string title)
+        private void FormatPrPayload(string title, BitbucketServerPayloadPullRequest payload)
         {
-            var pullRequestId = (string) _body["pullRequest"]?["id"];
-            var pullRequestTitle = (string) _body["pullRequest"]?["title"];
-            var pullRequestDescription = (string) _body["pullRequest"]?["description"];
-            
-            _embed.Author = ExtractAuthor();
-            _embed.Title = $"{title}\n" +
-                           $"{pullRequestId} - {pullRequestTitle}";
-            _embed.Description = pullRequestDescription;
-            _embed.Url = ExtractPullRequestUrl();
-            _embed.Fields = ExtractPullRequestFields();
+            _embed.Author = ExtractAuthor(payload.Actor, payload.PullRequest.FromRef.Repository);
+            _embed.Title = $"**{title}**\n" +
+                           $"{payload.PullRequest.Title}\n" +
+                           $"*PR-{payload.PullRequest.Id}*";
+            _embed.Description = payload.PullRequest.Description;
+            _embed.Url = ExtractPullRequestUrl(payload.PullRequest);
+            _embed.Fields = ExtractPullRequestFields(payload.PullRequest);
         }
 
-        private void FormatCommentPayload(string title)
+        private void FormatCommentPayload(string title, BitbucketServerPayloadPullRequest payload)
         {
-            var pullRequestId = (string) _body["pullRequest"]?["id"];
-            var pullRequestTitle = (string) _body["pullRequest"]?["title"];
-            var pullRequestDescription = (string) _body["comment"]?["text"];
-            
-            _embed.Author = ExtractAuthor();
-            _embed.Description = pullRequestDescription;
-            _embed.Url = ExtractPullRequestUrl();
+            _embed.Title = title;
+            _embed.Author = ExtractAuthor(payload.Actor, payload.PullRequest.FromRef.Repository);
+            _embed.Description = payload.PullRequest.Comment.Text;
+            _embed.Url = ExtractPullRequestUrl(payload.PullRequest);
         }
 
 
-        private string ExtractPullRequestUrl()
+        private string ExtractPullRequestUrl(BitbucketServerPullRequest pullRequest)
         {
-            var projectKey = (string) _body["pullRequest"]?["fromRef"]?["repository"]?["project"]?["key"];
-            var slug = (string) _body["pullRequest"]?["fromRef"]?["repository"]?["slug"];
-            var pullRequestId = (string) _body["pullRequest"]?["id"];
-            return $"{ExtractBaseLink()}/projects/{projectKey}/repos/{slug}/pull-requests/{pullRequestId}/overview";
+            return $"{ExtractBaseLink(pullRequest.Author.User)}/projects/" +
+                   $"{pullRequest.FromRef.Repository.Project.Key}/repos/" +
+                   $"{pullRequest.FromRef.Repository.Slug}/pull-requests/" +
+                   $"{pullRequest.Id}/overview";
         }
 
-        private List<EmbedField> ExtractPullRequestFields()
+        private List<EmbedField> ExtractPullRequestFields(BitbucketServerPullRequest pullRequest)
         {
             var fieldList = new List<EmbedField>();
             var fromField = new EmbedField
             {
                 Name = "From",
-                Value = (string) _body["pullRequest"]?["fromRef"]?["displayId"]
+                Value = pullRequest.FromRef.DisplayId
             };
 
             var toField = new EmbedField
             {
                 Name = "To",
-                Value = (string) _body["pullRequest"]?["toRef"]?["displayId"]
+                Value = pullRequest.ToRef.DisplayId
             };
             
             fieldList.Add(fromField);
             fieldList.Add(toField);
 
-            // ReSharper disable once PossibleInvalidOperationException
-            var reviewerLength = (int) _body["pullRequest"]?["reviewers"].Count();
-            
-            for (var i = 0; i < Math.Min(reviewerLength, 15); i++)
+            var fieldCount = 0;
+            foreach (var reviewer in pullRequest.Reviewers)
             {
-                var reviewerField = new EmbedField
+                fieldCount++;
+
+                if (fieldCount > 10)
                 {
-                    Name = "Reviewer",
-                    Value = (string) _body["pullRequest"]["reviewers"][i]?["user"]?["displayName"]
-                };
-                
-                fieldList.Add(reviewerField);
+                    break;
+                }
+                if (Environment.GetEnvironmentVariable("ALLOW_REAL_NAMES") == "true")
+                {
+                    var reviewerField = new EmbedField
+                    {
+                        Name = "Reviewer",
+                        Value = reviewer.User.DisplayName
+                    };
+                    
+                    fieldList.Add(reviewerField);
+                }
+                else
+                {
+                    var reviewerField = new EmbedField
+                    {
+                        Name = "Reviewer Status",
+                        Value = reviewer.Status
+                    };
+                    
+                    fieldList.Add(reviewerField);
+                }
             }
 
             return fieldList;
 
         }
 
-        private string ExtractPullRequestRepositoryName()
-        {
-            return (string) _body["pullRequest"]?["toRef"]?["repository"]?["name"];
-        }
-        
-        private string ExtractRepoRepositoryName()
-        {
-            return (string) _body["repository"]?["name"];
-        }
-
-        private string ExtractRepoUrl()
-        {
-            var projectKey = (string) _body["repository"]?["project"]?["key"];
-            var slug = (string) _body["repository"]?["slug"];
-
-            return $"{ExtractBaseLink()}/projects/{projectKey}/repos/{slug}/browse";
-        }
-        
-        private List<EmbedField> ExtractRepoChangesField()
+        private static List<EmbedField> ExtractRepoChangesField(IEnumerable<BitbucketServerChange> changes)
         {
             var fieldList = new List<EmbedField>();
-            var changesLength = _body["changes"]!.Count();
-            
-            for (var i = 0; i < Math.Min(changesLength, 28); i++)
-            {
-                var branch = (string) _body["changes"]?[i]?["ref"]?["displayId"];
-                var hash = (string) _body["changes"]?[i]?["toHash"];
-                var formattedHash = hash!.Substring(0, 10);
-                var type = (string) _body["changes"]?[i]?["type"];
+            var changeCount = 0;
 
-                var changesEmbed = new EmbedField
+            foreach (var change in changes)
+            {
+                changeCount++;
+
+                if (changeCount > 10)
+                {
+                    break;
+                }
+
+                var branch = change.Ref.DisplayId;
+                var hash = change.ToHash.Substring(0,10);
+                var type = change.Type;
+
+                var field = new EmbedField
                 {
                     Name = "Change",
                     Value = $"**Branch**: {branch}\n" +
-                            $"**New Hash**: {formattedHash}\n" +
+                            $"**New Hash**: {hash}\n" +
                             $"**Type**: {type}"
                 };
+                
+                fieldList.Add(field);
 
-                fieldList.Add(changesEmbed);
             }
 
             return fieldList;
         }
 
-        private string ExtractCommitCommentUrl()
+        private static string ExtractCommitCommentUrl(BitbucketServerPayloadRefsChanged payload)
         {
-            var projectKey = (string) _body["repository"]?["project"]?["key"];
-            var projectSlug = (string) _body["repository"]?["slug"];
-            var commit = (string) _body["commit"];
-            
-            return $"{ExtractBaseLink()}/projects/{projectKey}/repos/{projectSlug}/{commit}";
+            return $"{ExtractBaseLink(payload.Actor)}/projects/{payload.Repository.Project.Key}" +
+                   $"/repos/{payload.Repository.Slug}/{payload.Changes[0].FromHash}";
         }
         
-        private string ExtractBaseLink()
+        private static string ExtractBaseLink(BitbucketServerActor actor)
         {
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BITBUCKET_SERVER_URL")))
-            {
-                return (string) _body["author"]?["user"]?["links"]?["self"]?[0]?["href"];
-            }
-
-            return Environment.GetEnvironmentVariable("BITBUCKET_SERVER_URL");
+            return string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BITBUCKET_SERVER_URL")) 
+                ? actor.Links.Self[0].Href 
+                : Environment.GetEnvironmentVariable("BITBUCKET_SERVER_URL");
         }
     }
 }
