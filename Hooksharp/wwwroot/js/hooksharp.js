@@ -20,7 +20,7 @@ function onReady() {
 async function onParseClick() {
     let incomingHook = $('#inboundHook').val();
     if (incomingHook === '' || incomingHook === undefined) {
-        fireToast('Looks like you for got to enter your Current Webhook!', 'error');
+        fireToast('Looks like you forgot to enter your Current Webhook!', 'error');
         return false;
     }
     let result = await HandleRequestAndParse();
