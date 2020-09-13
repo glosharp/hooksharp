@@ -1,7 +1,7 @@
 ﻿# Hooksharp
 Webhook parsing engine for Microsoft Teams and Discord.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/q39ensom1braxp97?svg=true)](https://ci.appveyor.com/project/glosharp/hooksharp)
+![Docker Status](https://github.com/glosharp/hooksharp/workflows/Docker%20Deploy/badge.svg?branch=master)
 
 *We are still actively building this young project!*
 
@@ -28,3 +28,7 @@ The major difference between Sharphook and Skyhook is that Sharphook not only in
 as well. 
 
 Make sure you check out Skyhook too!
+
+## Glosharp
+
+[Glosharp](glosharp.com)
