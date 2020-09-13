@@ -15,5 +15,7 @@ jobs:
           node-version: 10.x
       - name: Run install and build
         run: |
+          cd Hooksharp
+          cd ClientApp
           npm install
           npm run build
