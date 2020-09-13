@@ -1,4 +1,4 @@
-name: Hooksharp API
+name: Hooksharp Build
 
 on:
   pull_request:
