@@ -38,9 +38,9 @@ namespace Hooksharp
             }
 
             app.UseHttpsRedirection();
-            if (!env.IsDevelopment())
-            {
-            }
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseRouting();
 

@@ -24,6 +24,8 @@ namespace Hooksharp.Controllers
         public async Task<ActionResult> BitbucketServer(string webhookId, string webhookToken, [FromBody] JObject hook)
         {
             HttpContext.Request.Headers.TryGetValue("X-Event-Key", out var eventKey);
+            
+            _logger.LogInformation($"{nameof(BitbucketServer)} >>> {eventKey}");
 
             if (string.IsNullOrEmpty(eventKey))
             {
