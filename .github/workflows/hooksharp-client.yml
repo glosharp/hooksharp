@@ -15,7 +15,7 @@ jobs:
           node-version: 10.x
       - name: Install Angular
         run: |
-          npm install -g @angular/cli@8.2.12
+          npm install -g @angular/cli@8.3.29
       - name: Run install and build
         run: |
           cd Hooksharp
