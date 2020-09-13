@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  Hooksharp-Client-Build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,6 +13,9 @@ jobs:
         uses: actions/setup-node@v1.4.3
         with:
           node-version: 10.x
+      - name: Install Angular
+        run: |
+          npm install -g @angular/cli@8.2.26
       - name: Run install and build
         run: |
           cd Hooksharp
