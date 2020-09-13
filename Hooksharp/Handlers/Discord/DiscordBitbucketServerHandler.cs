@@ -31,6 +31,7 @@ namespace Hooksharp.Handlers.Discord
 
         private Task ParseData(JObject raw, string eventKey)
         {
+            
             switch (eventKey)
             {
                 case "diagnostics:ping":
@@ -306,7 +307,7 @@ namespace Hooksharp.Handlers.Discord
             _embed.Author = ExtractAuthor(payload.Actor, payload.PullRequest.FromRef.Repository);
             _embed.Title = $"**{title}**\n" +
                            $"{payload.PullRequest.Title}\n" +
-                           $"*PR-{payload.PullRequest.Id}*";
+                           $"PR-{payload.PullRequest.Id}";
             _embed.Description = payload.PullRequest.Description;
             _embed.Url = ExtractPullRequestUrl(payload.PullRequest);
             _embed.Fields = ExtractPullRequestFields(payload.PullRequest);
