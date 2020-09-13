@@ -20,13 +20,13 @@ jobs:
         run: dotnet build --configuration Release
       - name: Publish
         run: |
-          dotnet publish --configuration Release --self-contained true --runtime linux-x64 --output /releases/linux
-          dotnet publish --configuration Release --self-contained true --runtime win-x64 --output /releases/windows
+          dotnet publish --configuration Release --self-contained true --runtime linux-x64 --output linux
+          dotnet publish --configuration Release --self-contained true --runtime win-x64 --output windows
       - name: Create release
         uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: >
-            /releases/linux
-            /releases/windows
+            linux
+            windows
             
