@@ -31,4 +31,4 @@ Make sure you check out Skyhook too!
 
 ## Glosharp
 
-[Glosharp](glosharp.com)
+[Glosharp](https://glosharp.com)
