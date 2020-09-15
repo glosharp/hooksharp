@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using Hooksharp.Handlers.Teams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace Hooksharp.Controllers
 {
@@ -15,8 +17,9 @@ namespace Hooksharp.Controllers
             _logger = logger;
         }
 
-        
-        public async Task<ActionResult> BitbucketServer()
+        [HttpPost("bitbucket-server/{client}@{tenant}/IncomingWebhook/{webhookId}/{secret}")]
+        public async Task<ActionResult> BitbucketServer(string client, string tenant, string webhookId, string secret, 
+            [FromBody] JObject hook)
         {
             HttpContext.Request.Headers.TryGetValue("X-Event-Key", out var eventKey);
             
@@ -26,6 +29,9 @@ namespace Hooksharp.Controllers
             {
                 return BadRequest(new {message = "X-Event-Key header is missing."});
             }
+            
+            var handler = new TeamsBitbucketServerHandler();
+            var body = await handler.GetPayload(hook, eventKey);
 
             return Ok();
 

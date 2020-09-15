@@ -18,6 +18,6 @@ namespace Hooksharp.Models.Teams
         public List<ICardItem> Body { get; set; }
         
         [JsonProperty("actions")]
-        public List<ICardAction> Actions { get; }
+        public List<ICardAction> Actions { get; set; }
     }
 }
