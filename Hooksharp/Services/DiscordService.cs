@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using RestSharp;
 
-namespace Hooksharp.Services.Discord
+namespace Hooksharp.Services
 {
-    public class DiscordService : IDiscordService
+    public class DiscordService
     {
         private readonly RestClient _restClient;
         public DiscordService(string discordUrl = "https://discordapp.com/api/webhooks/")

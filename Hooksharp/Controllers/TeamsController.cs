@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Hooksharp.Handlers.Teams;
+using Hooksharp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -11,10 +12,11 @@ namespace Hooksharp.Controllers
     public class TeamsController : Controller
     {
         private readonly ILogger<TeamsController> _logger;
-        
-        public TeamsController(ILogger<TeamsController> logger)
+        private TeamsService _teamsService;
+        public TeamsController(ILogger<TeamsController> logger, TeamsService teamsService)
         {
             _logger = logger;
+            _teamsService = teamsService;
         }
 
         [HttpPost("bitbucket-server/{client}@{tenant}/IncomingWebhook/{webhookId}/{secret}")]
@@ -33,7 +35,9 @@ namespace Hooksharp.Controllers
             var handler = new TeamsBitbucketServerHandler();
             var body = await handler.GetPayload(hook, eventKey);
 
-            return Ok();
+            var result = await _teamsService.PostWebhook(body, client, tenant, webhookId, secret);
+
+            return StatusCode((int) result);
 
         }
     }

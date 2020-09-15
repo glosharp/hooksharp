@@ -1,4 +1,4 @@
-using Hooksharp.Services.Discord;
+using Hooksharp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -23,6 +23,7 @@ namespace Hooksharp
         {
             services.AddControllers().AddNewtonsoftJson();
             services.AddSingleton<DiscordService>();
+            services.AddSingleton<TeamsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
