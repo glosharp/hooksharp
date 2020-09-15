@@ -25,7 +25,7 @@ namespace Hooksharp.Controllers
         {
             HttpContext.Request.Headers.TryGetValue("X-Event-Key", out var eventKey);
             
-            _logger.LogInformation($"{nameof(BitbucketServer)} >>> {eventKey}");
+            _logger.LogInformation($"{nameof(DiscordController)} >>> {nameof(BitbucketServer)} >>> {eventKey}");
 
             if (string.IsNullOrEmpty(eventKey))
             {
