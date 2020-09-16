@@ -317,7 +317,7 @@ namespace Hooksharp.Handlers.Discord
         {
             _embed.Title = title;
             _embed.Author = ExtractAuthor(payload.Actor, payload.PullRequest.FromRef.Repository);
-            _embed.Description = payload.PullRequest.Comment.Text;
+            _embed.Description = payload.Comment.Text;
             _embed.Url = ExtractPullRequestUrl(payload.PullRequest);
         }
 
