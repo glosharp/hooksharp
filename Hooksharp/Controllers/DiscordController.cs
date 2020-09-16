@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Hooksharp.Handlers.Discord;
-using Hooksharp.Services.Discord;
+using Hooksharp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -12,12 +12,12 @@ namespace Hooksharp.Controllers
     public class DiscordController : ControllerBase
     {
         private readonly ILogger<DiscordController> _logger;
-        private DiscordService DiscordService;
+        private DiscordService _discordService;
 
         public DiscordController(ILogger<DiscordController> logger, DiscordService discordService)
         {
             _logger = logger;
-            DiscordService = discordService;
+            _discordService = discordService;
         }
         
         [HttpPost("bitbucket-server/{webhookId}/{webhookToken}")]
@@ -25,7 +25,7 @@ namespace Hooksharp.Controllers
         {
             HttpContext.Request.Headers.TryGetValue("X-Event-Key", out var eventKey);
             
-            _logger.LogInformation($"{nameof(BitbucketServer)} >>> {eventKey}");
+            _logger.LogInformation($"{nameof(DiscordController)} >>> {nameof(BitbucketServer)} >>> {eventKey}");
 
             if (string.IsNullOrEmpty(eventKey))
             {
@@ -35,7 +35,7 @@ namespace Hooksharp.Controllers
             var handler = new DiscordBitbucketServerHandler();
             var body = await handler.GetPayload(hook, eventKey);
 
-            var result = await DiscordService.PostWebhook(body, webhookId, webhookToken);
+            var result = await _discordService.PostWebhook(body, webhookId, webhookToken);
 
             return StatusCode((int) result);
         }
