@@ -29,5 +29,8 @@ namespace Hooksharp.Models.Providers.BitbucketServer
 
         [JsonProperty("previousState")]
         public string PreviousState;
+
+        [JsonProperty("comment")]
+        public BitbucketServerComment Comment;
     }
 }
